@@ -1,11 +1,12 @@
-package com.uoa.iokasti.networkmonitor;
+package com.uoa.iokasti.networkmonitor.cell;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+
+import com.uoa.iokasti.networkmonitor.R;
 
 public class CellActivity extends AppCompatActivity {
 

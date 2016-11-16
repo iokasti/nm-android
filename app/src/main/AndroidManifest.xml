@@ -25,8 +25,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".WifiActivity" />
-        <activity android:name=".CellActivity"></activity>
+        <activity android:name=".wifi.WifiActivity" />
+        <activity android:name=".cell.CellActivity"></activity>
     </application>
 
 </manifest>

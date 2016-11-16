@@ -161,7 +161,7 @@
     </TableRow>
 
     <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
+        android:id="@+id/connected_cell_mapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

@@ -1,4 +1,4 @@
-package com.uoa.iokasti.networkmonitor;
+package com.uoa.iokasti.networkmonitor.cell;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,14 +16,14 @@ public class CellPagerAdapter extends FragmentPagerAdapter {
 
         switch (i) {
             case 0:
-                CellInfoFragment cellInfoFragment = new CellInfoFragment();
-                return cellInfoFragment;
+                ConnectedCellFragment ConnectedCellFragment = new ConnectedCellFragment();
+                return ConnectedCellFragment;
             case 1:
                 NeighborCellsFragment neighborCellsFragment = new NeighborCellsFragment();
                 return neighborCellsFragment;
             case 2:
-                CellsMapFragment cellsMapFragment = new CellsMapFragment();
-                return cellsMapFragment;
+                CellsMapFragment CellsMapFragment = new CellsMapFragment();
+                return CellsMapFragment;
 
         }
         return null;

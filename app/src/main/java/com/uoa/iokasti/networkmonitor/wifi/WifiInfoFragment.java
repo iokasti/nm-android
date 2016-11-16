@@ -1,4 +1,4 @@
-package com.uoa.iokasti.networkmonitor;
+package com.uoa.iokasti.networkmonitor.wifi;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.uoa.iokasti.networkmonitor.R;
 
 /**
  * Fragment

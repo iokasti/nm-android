@@ -13,6 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.uoa.iokasti.networkmonitor.cell.CellActivity;
+import com.uoa.iokasti.networkmonitor.wifi.WifiActivity;
+
 /**
  * Activity
  * Application start screen

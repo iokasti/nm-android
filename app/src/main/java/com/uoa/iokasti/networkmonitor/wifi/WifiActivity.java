@@ -1,4 +1,4 @@
-package com.uoa.iokasti.networkmonitor;
+package com.uoa.iokasti.networkmonitor.wifi;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -17,6 +17,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.uoa.iokasti.networkmonitor.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,13 +75,13 @@ public class WifiActivity extends AppCompatActivity implements AdapterView.OnIte
         registerReceiver(wifiBroadcastReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
         /* Scan for wifi networks every wifiScanInterval seconds*/
-        TimerTask wifi_scan_task = new TimerTask() {
+        TimerTask wifiScanTask = new TimerTask() {
             @Override
             public void run() {
                 new wifiScanAsync().execute();
             }
         };
-        new Timer().scheduleAtFixedRate(wifi_scan_task, 0, wifiScanInterval);
+        new Timer().scheduleAtFixedRate(wifiScanTask, 0, wifiScanInterval);
     }
 
     protected void onPause() {
