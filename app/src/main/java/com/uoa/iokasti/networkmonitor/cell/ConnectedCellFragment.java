@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -64,7 +65,6 @@ public class ConnectedCellFragment extends Fragment {
     private MapView connectedCellMapView;
     private GoogleMap connectedCellGoogleMap;
 
-    private TimerTask cellInfoScanTask;
 
     //  private String openCellIdApiKey = "ef445193-fc82-482f-b199-9422b79a0e0a"; original
     private String openCellIdApiKey = "5712903e-fe28-4a66-a0c1-bd496178783f"; // temp
@@ -73,7 +73,9 @@ public class ConnectedCellFragment extends Fragment {
     private _CellInfo connectedCellInfo;
 
     /* TODO add as setting to user, save to db */
-    private int cellInfoScanInterval = 2500;
+    static int cellInfoScanInterval = 2500;
+//    Timer timer = null;
+    static TimerTask cellInfoScanTask = null;
 
     /* TODO check for internet connection */
 
@@ -102,7 +104,9 @@ public class ConnectedCellFragment extends Fragment {
                 new cellInfoScan().execute();
             }
         };
-        new Timer().scheduleAtFixedRate(cellInfoScanTask, 0, cellInfoScanInterval);
+//        timer = new Timer();
+//        timer.scheduleAtFixedRate(cellInfoScanTask, 0, cellInfoScanInterval);
+
         return view;
     }
 
@@ -149,7 +153,6 @@ public class ConnectedCellFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        cellInfoScanTask.cancel();
     }
 
     private int getRssi(String CellSignalStrengthLte) {
@@ -172,6 +175,7 @@ public class ConnectedCellFragment extends Fragment {
     public class cellInfoScan extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
+            Log.d("connected Cell", "timer");
             List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();
             for (CellInfo cellInfo : cellInfos) {
                 if (cellInfo.isRegistered()) {
@@ -191,6 +195,7 @@ public class ConnectedCellFragment extends Fragment {
                         connectedCellInfo.setMcc(cellInfoLte.getCellIdentity().getMcc());
                         connectedCellInfo.setMnc(cellInfoLte.getCellIdentity().getMnc());
                         connectedCellInfo.setRat("LTE");
+
                         if (oldCellId != connectedCellInfo.getCellId() || connectedCellInfo.getLatitude() == -1) {
                             double[] latLong = getLatLong(connectedCellInfo.getCellId(), connectedCellInfo.getMcc(), connectedCellInfo.getMnc(), connectedCellInfo.getTac());
                             connectedCellInfo.setLatitude(latLong[0]);

@@ -173,6 +173,7 @@ public class CellsMapFragment extends Fragment {
             JSONArray cellsJsonArray = new JSONArray(cellsJson.toString());
             for(int i=0; i<cellsJsonArray.length(); i++){
                 JSONObject cell = cellsJsonArray.getJSONObject(i);
+                Log.d("cell", cell.toString());
                 //TODO add cells to neighborCells map
 //                neighborCells.put(cell.getInt("cellid"),
 //                        new _CellInfo(cell.getInt("cellid"),cell.getInt("lac"), cell.getInt("lac"), cell.getInt()));

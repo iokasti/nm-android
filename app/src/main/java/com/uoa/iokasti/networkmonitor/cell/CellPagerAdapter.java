@@ -16,14 +16,11 @@ public class CellPagerAdapter extends FragmentPagerAdapter {
 
         switch (i) {
             case 0:
-                ConnectedCellFragment ConnectedCellFragment = new ConnectedCellFragment();
-                return ConnectedCellFragment;
+                return new ConnectedCellFragment();
             case 1:
-                NeighborCellsFragment neighborCellsFragment = new NeighborCellsFragment();
-                return neighborCellsFragment;
+                return new NeighborCellsFragment();
             case 2:
-                CellsMapFragment CellsMapFragment = new CellsMapFragment();
-                return CellsMapFragment;
+                return new CellsMapFragment();
 
         }
         return null;
