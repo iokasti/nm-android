@@ -15,8 +15,9 @@ public class _CellInfo {
     private int mnc;
     private double latitude;
     private double longitude;
+    private boolean connected;
 
-    public _CellInfo(int cellId, int lac, int tac, int rssi, int rsrp, int rsrq, int rssnr, int cqi, String rat, int mcc, int mnc, double latitude, double longitude) {
+    public _CellInfo(int cellId, int lac, int tac, int rssi, int rsrp, int rsrq, int rssnr, int cqi, String rat, int mcc, int mnc, double latitude, double longitude, boolean connected) {
         this.cellId = cellId;
         this.lac = lac;
         this.tac = tac;
@@ -30,6 +31,7 @@ public class _CellInfo {
         this.mnc = mnc;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.connected = connected;
     }
 
     public _CellInfo() {
@@ -46,6 +48,7 @@ public class _CellInfo {
         this.mnc = Integer.MAX_VALUE;
         this.latitude = Double.MAX_VALUE;
         this.longitude = Double.MAX_VALUE;
+        this.connected = false;
     }
 
     public int getCellId() {
@@ -152,6 +155,14 @@ public class _CellInfo {
         this.longitude = longitude;
     }
 
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+
+    public boolean getConnected() {
+        return connected;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -166,4 +177,5 @@ public class _CellInfo {
     public int hashCode() {
         return cellId;
     }
+
 }

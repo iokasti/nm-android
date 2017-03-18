@@ -56,16 +56,10 @@ public class WifiActivity extends AppCompatActivity implements AdapterView.OnIte
         findViews();
 
         /* Get the WiFiManager */
-        wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        if (!wifi.isWifiEnabled()) {
-            /* If wifi is disabled created a pop up "Enabling" and enable it */
-            Toast.makeText(getApplicationContext(), "Wifi is disabled. Enabling...",
-                    Toast.LENGTH_LONG).show();
-            wifi.setWifiEnabled(true);
-        }
+        wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);;
 
         /* Initialize structures and the adapter */
-        wifiNetworksNames = new ArrayList<String>();
+        wifiNetworksNames = new ArrayList<>();
         wifiNetworksListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, wifiNetworksNames);
         wifiNetworksList.setAdapter(wifiNetworksListAdapter);
         wifiBroadcastReceiver = new WifiBroadcastReceiver();

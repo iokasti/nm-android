@@ -2,45 +2,47 @@ package com.uoa.iokasti.networkmonitor.cell;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.Locale;
 
-public class CellPagerAdapter extends FragmentPagerAdapter {
-    public CellPagerAdapter(FragmentManager fm) {
+class CellPagerAdapter extends FragmentStatePagerAdapter {
+    Fragment[] screens;
+
+    CellPagerAdapter(FragmentManager fm) {
         super(fm);
+        screens = new Fragment[3];
+        screens[0] = new ConnectedCellFragment();
+        screens[1] = new NeighbourCellsFragment();
+        screens[2] = new CellsMapFragment();
     }
 
     @Override
-    public Fragment getItem(int i) {
-
-        switch (i) {
-            case 0:
-                return new ConnectedCellFragment();
-            case 1:
-                return new NeighborCellsFragment();
-            case 2:
-                return new CellsMapFragment();
-
+    public Fragment getItem(final int index) {
+        if (index <= screens.length) {
+            return screens[index];
         }
         return null;
     }
 
     @Override
     public int getCount() {
-        return 3;
-    }//set the number of tabs
+        return screens.length;
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+    }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        Locale l = Locale.getDefault();
         switch (position) {
             case 0:
                 return "Cell Info";
             case 1:
-                return "Neighbor Cells";
-            case 2:
-
+                return "neighbour Cells";
+            case 3:
                 return "Cells Map";
         }
         return null;

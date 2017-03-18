@@ -26,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -40,7 +41,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -65,19 +65,14 @@ public class ConnectedCellFragment extends Fragment {
     private MapView connectedCellMapView;
     private GoogleMap connectedCellGoogleMap;
 
-
-    //  private String openCellIdApiKey = "ef445193-fc82-482f-b199-9422b79a0e0a"; original
-    private String openCellIdApiKey = "5712903e-fe28-4a66-a0c1-bd496178783f"; // temp
-
     int oldCellId = Integer.MAX_VALUE;
-    private _CellInfo connectedCellInfo;
+    static _CellInfo connectedCellInfo;
 
     /* TODO add as setting to user, save to db */
-    static int cellInfoScanInterval = 2500;
-//    Timer timer = null;
-    static TimerTask cellInfoScanTask = null;
+    private final int cellInfoScanInterval = 2500;
 
-    /* TODO check for internet connection */
+    Timer timer = null;
+    private TimerTask cellInfoScanTask = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -92,11 +87,18 @@ public class ConnectedCellFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         telephonyManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
 
         connectedCellInfo = new _CellInfo();
 
+        timer = new Timer();
+
+        return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         // update cell info here
         cellInfoScanTask = new TimerTask() {
             @Override
@@ -104,10 +106,7 @@ public class ConnectedCellFragment extends Fragment {
                 new cellInfoScan().execute();
             }
         };
-//        timer = new Timer();
-//        timer.scheduleAtFixedRate(cellInfoScanTask, 0, cellInfoScanInterval);
-
-        return view;
+        timer.scheduleAtFixedRate(cellInfoScanTask, 0, cellInfoScanInterval);
     }
 
     private void findViews(View view) {
@@ -172,10 +171,9 @@ public class ConnectedCellFragment extends Fragment {
     }
 
 
-    public class cellInfoScan extends AsyncTask<Void, Void, Void> {
+    private class cellInfoScan extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            Log.d("connected Cell", "timer");
             List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();
             for (CellInfo cellInfo : cellInfos) {
                 if (cellInfo.isRegistered()) {
@@ -195,8 +193,9 @@ public class ConnectedCellFragment extends Fragment {
                         connectedCellInfo.setMcc(cellInfoLte.getCellIdentity().getMcc());
                         connectedCellInfo.setMnc(cellInfoLte.getCellIdentity().getMnc());
                         connectedCellInfo.setRat("LTE");
-
-                        if (oldCellId != connectedCellInfo.getCellId() || connectedCellInfo.getLatitude() == -1) {
+                        connectedCellInfo.setConnected(true);
+                        if (oldCellId != connectedCellInfo.getCellId()) {
+                            Log.d(String.valueOf(oldCellId), String.valueOf(connectedCellInfo.getCellId()));
                             double[] latLong = getLatLong(connectedCellInfo.getCellId(), connectedCellInfo.getMcc(), connectedCellInfo.getMnc(), connectedCellInfo.getTac());
                             connectedCellInfo.setLatitude(latLong[0]);
                             connectedCellInfo.setLongitude(latLong[1]);
@@ -237,7 +236,8 @@ public class ConnectedCellFragment extends Fragment {
                             if (connectedCellInfo.getLatitude() != -1) {
                                 // For dropping a marker at a point on the Map
                                 LatLng cellLocation = new LatLng(connectedCellInfo.getLatitude(), connectedCellInfo.getLongitude());
-                                connectedCellGoogleMap.addMarker(new MarkerOptions().position(cellLocation).title("Connected Cell #" + connectedCellInfo.getCellId()).snippet("Location of currently used cell."));
+                                connectedCellGoogleMap.addMarker(new MarkerOptions().position(cellLocation).title("Connected Cell #" + connectedCellInfo.getCellId()).snippet("Location of currently used cell.")
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_media_route_connecting_00_light)));
 
                                 // For zooming automatically to the location of the marker
                                 CameraPosition cameraPosition = new CameraPosition.Builder().target(cellLocation).zoom(16).build();
@@ -253,7 +253,7 @@ public class ConnectedCellFragment extends Fragment {
 
 
     private double[] getLatLong(int cellId, int mcc, int mnc, int tac) {
-        String sURL = String.format("http://opencellid.org/cell/get?key=%s&mcc=%d&mnc=%d&cellid=%d&lac=%d&format=json", openCellIdApiKey, mcc, mnc, cellId, tac);
+        String sURL = String.format("http://2.84.143.223:4445/server/getcellinfo/get/mcc/%d/mnc/%d/cellid/%d/lac/%d", mcc, mnc, cellId, tac);
         try {
             URL url = new URL(sURL);
             HttpURLConnection request = (HttpURLConnection) url.openConnection();
@@ -262,11 +262,17 @@ public class ConnectedCellFragment extends Fragment {
             // Convert to a JSON object
             JsonParser jsonParser = new JsonParser(); //from gson
             JsonElement root = jsonParser.parse(new InputStreamReader((InputStream) request.getContent())); //Convert the input stream to a json element
-            JsonObject openCellIdJson = root.getAsJsonObject(); //May be an array, may be an object.
+            JsonObject openCellIdJson = root.getAsJsonObject();
+            Log.d("add", openCellIdJson.toString());
+
             if (!openCellIdJson.entrySet().contains("error")) {
                 double latitude = openCellIdJson.get("lat").getAsDouble();
                 double longitude = openCellIdJson.get("lon").getAsDouble();
-                return new double[]{latitude, longitude};
+                if (latitude == 0 && longitude == 0) {
+                    return new double[]{-1, -1};
+                } else {
+                    return new double[]{latitude, longitude};
+                }
             } else {
                 return new double[]{-1, -1};
             }
